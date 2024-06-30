@@ -4,12 +4,12 @@ using System;
 public partial class BuildingResource : Resource
 {
 	[Export] public PackedScene Building { get; set; }
-	[Export] public TileMapPattern Pattern { get; set; }
+	[Export] public int PatternIndex { get; set; }
 
-	public BuildingResource() : this(null, null) {}
+	public BuildingResource() : this(null, 0) {}
 
-	public BuildingResource(PackedScene building, TileMapPattern pattern) {
+	public BuildingResource(PackedScene building, int pattern) {
 		Building = building;
-		Pattern = pattern;
+		PatternIndex = pattern;
 	}
 }

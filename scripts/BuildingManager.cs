@@ -1,47 +1,42 @@
 using Godot;
 using System;
+using System.Runtime.ConstrainedExecution;
 
 public partial class BuildingManager : Node
 {
-	private bool isTPressed = false;
-	private Sprite2D buildingPreview;
-	private Vector2 gridSnappedPosition;
-	private PackedScene SelectedBuilding = GD.Load<PackedScene>("res://scenes/test_building.tscn");
+	[Export] public TileMap Tiles;
+	[Export] public BuildingResource TestResourceStartWith;
+
+	private BuildingResource _selectedBuilding;
+	private bool _isTPressed = false;
+	private Vector2 _gridSnappedPosition;
 
 	public override void _Ready()
 	{
-		buildingPreview = GetNode<Sprite2D>("BuildingPreview");
+		_selectedBuilding = TestResourceStartWith;
 	}
 
 	public override void _Process(double delta)
 	{
-		Vector2 mousePos = GetViewport().GetMousePosition() - GetViewport().GetVisibleRect().GetCenter();
-		gridSnappedPosition = new Vector2(
-			(float) Math.Round(mousePos.X / 16) * 16,
-			(float) Math.Round(mousePos.Y / 16) * 16 + 8f
-		);
+		if (Input.IsActionJustPressed("place")) {
+			Vector2 mousePos = GetViewport().GetMousePosition() - GetViewport().GetVisibleRect().GetCenter();
 
-		if (isTPressed)
-			buildingPreview.Position = gridSnappedPosition;
-	}
+			bool xIsEven = Tiles.TileSet.GetPattern(_selectedBuilding.PatternIndex).GetSize().X % 2 == 0;
+			bool yIsEven = Tiles.TileSet.GetPattern(_selectedBuilding.PatternIndex).GetSize().Y % 2 == 0;
+			
+			float xOffset = xIsEven ? 0 : 1;
+			float yOffset = yIsEven ? 0 : 1;
 
-	public override void _Input(InputEvent @event)
-	{
-		if (@event is InputEventKey keyEvent && keyEvent.Keycode == Key.T)
-		{
-			isTPressed = keyEvent.Pressed;
+			Vector2I patternCoords = new Vector2I(
+				((int) Math.Round(mousePos.X + xOffset * 4 / 16)) + Tiles.TileSet.GetPattern(_selectedBuilding.PatternIndex).GetSize().X + (int) xOffset / 2,
+				((int) Math.Round(mousePos.Y + yOffset * 4 / 16)) + Tiles.TileSet.GetPattern(_selectedBuilding.PatternIndex).GetSize().Y + (int) yOffset / 2
+			);
 
-			if (!keyEvent.Pressed)
-				buildingPreview.Hide();
-			else
-				buildingPreview.Show();
-		}
-
-		if (@event is InputEventMouseButton mouseEvent && mouseEvent.Pressed && mouseEvent.ButtonIndex == MouseButton.Left && isTPressed)
-		{
-			Node2D newBuilding = (Node2D) SelectedBuilding.Instantiate();
-			GetTree().Root.AddChild(newBuilding);
-			newBuilding.Position = gridSnappedPosition;
+			Tiles.SetPattern(
+				1,
+				patternCoords,
+				Tiles.TileSet.GetPattern(_selectedBuilding.PatternIndex)
+			);
 		}
 	}
 }

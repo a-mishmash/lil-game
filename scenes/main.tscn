@@ -1,8 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://dpei74nr7mbtd"]
+[gd_scene load_steps=9 format=3 uid="uid://dpei74nr7mbtd"]
 
 [ext_resource type="Texture2D" uid="uid://duqtgp4hhctvb" path="res://assets/ground_atlas.png" id="1_2ra3j"]
 [ext_resource type="Texture2D" uid="uid://bpssw1s5b8w8y" path="res://assets/test_building.png" id="2_su1o3"]
 [ext_resource type="Script" path="res://scripts/BuildingManager.cs" id="3_85opa"]
+[ext_resource type="Resource" uid="uid://b21l5k0f6ad3o" path="res://assets/buildings/test_building.tres" id="4_im75e"]
 
 [sub_resource type="TileMapPattern" id="TileMapPattern_ffnyw"]
 tile_data = PackedInt32Array(0, 1, 1610612736, 65536, 1, 805306368, 1, 1, 0, 65537, 1, 1342177280)
@@ -33,9 +34,14 @@ layer_0/tile_data = PackedInt32Array(131074, 0, 0, -3, 196608, 0, -65539, 196608
 layer_1/name = "Objects"
 layer_1/z_index = 1
 layer_1/tile_data = PackedInt32Array()
+layer_2/name = "Preview"
+layer_2/modulate = Color(1, 1, 1, 0.588235)
+layer_2/tile_data = PackedInt32Array()
 
-[node name="BuildingManager" type="Node" parent="."]
+[node name="BuildingManager" type="Node" parent="." node_paths=PackedStringArray("Tiles")]
 script = ExtResource("3_85opa")
+Tiles = NodePath("../TileMap")
+TestResourceStartWith = ExtResource("4_im75e")
 
 [node name="BuildingPreview" type="Sprite2D" parent="BuildingManager"]
 visible = false
